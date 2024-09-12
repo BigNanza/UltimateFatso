@@ -587,41 +587,59 @@ function hasDuplicates(arr) {
     return category;
 }*/
 
+function findCommonNumbers(arr1, arr2, arr3) {
+    // Get elements from the 2nd index onwards
+    const filteredArr1 = arr1.slice(2);
+    const filteredArr2 = arr2.slice(2);
+    const filteredArr3 = arr3.slice(2);
+
+    // Create a Set from the first array's filtered elements for quick lookup
+    const set1 = new Set(filteredArr1);
+
+    // Find common elements in arr2 and arr3 with the Set
+    const commonWithArr2 = filteredArr2.filter(num => set1.has(num));
+    const set2 = new Set(commonWithArr2);
+
+    // Find common elements in arr3 with the Set of common elements from arr2
+    const commonWithArr3 = filteredArr3.filter(num => set2.has(num));
+
+    return commonWithArr3;
+}
+
 function generateCategory() {
     while (true) {
-        let index = Math.floor(Math.random() * listoflists.length);
-        console.log(categories[index])
+        let index = Math.floor(Math.random() * listoflists.length); // Primary Index
         if (listoflists[index].length == 1) continue
         listCategory = listoflists[index];
         firstCategory = listoflists[index][0];
-        console.log(categories[firstCategory])
         nextThree = []
         if (listCategory.length < 4) continue
-        for (let x = 0; x < 3; x++) {
+        for (let x = 0; x < 3; x++) { // Gen the 3 Oppos
             mrGuy = 1 + Math.floor(Math.random() * (listCategory.length-1))
             if (listoflists[mrGuy].length == 1) {x--; continue}
             nextThree.push(listCategory[mrGuy])
-            listCategory = listCategory.splice(mrGuy, mrGuy)
+            listCategory.splice(mrGuy, 1)
         }
-        yipperskis = []
-        for (let x = 0; x < listoflists.length; x++) {
-            headerman = listoflists[x][0]
-            if (listoflists[x].length == 1) continue
-            if (listoflists[x].includes(nextThree[0]) && listoflists[x].includes(nextThree[1]) && listoflists[x].includes(nextThree[2]) && headerman!=nextThree[0] && headerman!=nextThree[1] && headerman!=nextThree[2]) {
-                yipperskis.push(headerman)
-            }
-        }
+        const arr1 = listoflists[nextThree[0]]
+        const arr2 = listoflists[nextThree[1]]
+        const arr3 = listoflists[nextThree[2]]
+        yipperskis = findCommonNumbers(arr1, arr2, arr3)
         if (yipperskis.length < 2) continue
         category = []
         category.push(categories[firstCategory])
-        for (let x = 0; x < 2; x++) {
+        for (let x = 0; x < 2; x++) { // Gen the remaining 2
             mrGuy = Math.floor(Math.random() * (yipperskis.length))
             category.push(categories[yipperskis[mrGuy]])
-            yipperskis = yipperskis.splice(mrGuy, mrGuy)
+            //console.log("PREV " + yipperskis)
+            yipperskis.splice(mrGuy, 1)
+            //console.log(yipperskis)
         }
         category.push(categories[nextThree[0]])
         category.push(categories[nextThree[1]])
         category.push(categories[nextThree[2]])
+        if (new Set(category).size !== category.length) {
+            alert("DUPLICATE!!!!!!!!!!!!")
+        }
         return category;
     }
 }
